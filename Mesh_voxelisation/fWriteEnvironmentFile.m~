@@ -1,0 +1,42 @@
+clear; clc; close all;
+
+
+STLin = 'test.stl';
+gridX = 100;
+gridY = 37;
+gridZ = 7;
+
+[gridOUTPUT,gridCOx,gridCOy,gridCOz] = VOXELISE(gridX,gridY,gridZ,STLin);
+
+wall_output = not(gridOUTPUT);
+
+n_x = gridX;
+n_y = gridY;
+n_z = gridZ;
+
+[y_grid,x_grid,z_grid]=meshgrid(gridCOy,gridCOx,gridCOz);
+
+figure;
+hold on;
+for i=1:n_x
+    for j=1:n_y
+        for k=1:n_z-2
+            if wall_output(i,j,k)==1
+                plot3(x_grid(i,j,k),y_grid(i,j,k),z_grid(i,j,k),'o');
+            end
+        end
+    end
+end
+grid on;
+
+%}
+
+% file_name_output=strcat(output_dir,environment);
+file_name_output = 'environment';
+
+for j=1:size(wall_output,3)
+    dlmwrite(file_name_output,wall_output(:,:,j),'-append','delimiter',' ');
+    fileID = fopen(file_name_output,'a');
+    fprintf(fileID,';\n');
+    fclose(fileID);
+end
